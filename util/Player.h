@@ -12,6 +12,7 @@ private:
 
 public:
 
+	Player(Player*);
 	Player(Square::COLOR color);
     void setColor(Square::COLOR color);
     Square::COLOR getColor();

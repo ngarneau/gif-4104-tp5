@@ -1,5 +1,9 @@
 #include "Player.h"
 
+Player::Player(Player* player){
+        color = player->getColor();
+}
+
 Player::Player(Square::COLOR newColor) {
         color = newColor;
 }

@@ -2,7 +2,6 @@
 #define MOVE_H
  
 #include <iostream>
-#include "Game.h"
 using namespace std;
  
 class Move

@@ -17,13 +17,15 @@ void testGame()
 	Game* g = new Game();
 	cout << "Board dim " << g->getBoardDim() << endl;
 	g->output();
+	std::vector<Move*> moves = g->getLegalMoves(Square::COLOR::DARK);
+	cout << "Legal moves size " << moves.size() << endl;
 	cout << endl;
 }
 
 void testSquare()
 {
 	cout << "Test Square" << endl;
-	Square s;
+	Square s = new Square;
 	cout << "Square color " << s.getColor() << endl;
 	cout << endl;
 }

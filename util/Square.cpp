@@ -1,5 +1,13 @@
 #include "Square.h"
 
+Square::Square() {
+}
+
+
+Square::Square(Square* square) {
+    color = square->getColor();
+}
+
 void Square::setColor(Square::COLOR newColor){
 	color = newColor;
 }

@@ -10,6 +10,8 @@ private:
         
 public:
 		enum COLOR{NONE, DARK, LIGHT};
+		Square();
+		Square(Square*);
         void setColor(Square::COLOR color);
         Square::COLOR getColor();
         void switchColor();
