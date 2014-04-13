@@ -1,4 +1,6 @@
-#include "Game.h" 
+#include "Game.h"
+#include "AlphaBeta.h"
+#include <time.h>
 
 Game::Game(){
 	dim = 8;
@@ -89,14 +91,11 @@ void Game::output()
     }
 }
 
-void Game::play(){
-	// TODO
-}
-
 void Game::applyMove(Move* move, bool draw){
     int i = move->getMoveI();
     int j = move->getMoveJ();
     Square::COLOR color = currentPlayer->getColor();
+    //cout << "Color: " << color << endl;
     (board[i][j])->setColor(color);
     currentDisksNum++;
     increment(color);
@@ -254,7 +253,7 @@ int Game::getBoardDim(){
 	return dim;
 }
 
-Player Game::getCurrentPlayer(){
+Player* Game::getCurrentPlayer(){
 	return currentPlayer;
 }
 
@@ -273,4 +272,26 @@ int Game::getDarkDisksNum(){
 
 int Game::getLightDisksNum(){
 	return lightDisksNum;
+}
+
+void Game::play() {
+    AlphaBeta* ai = new AlphaBeta(); 
+    while (!endCondition()) {
+        Move* move = ai->getDecision(this);
+        //cout << "Player color: " << currentPlayer->getColor() << endl;
+        //cout << "I: " << move->getMoveI() << "J: " << move->getMoveJ() << endl;
+        if (move->getMoveI() != -1 && move->getMoveJ() != -1) {
+                applyMove(move, true);
+        }
+        currentPlayer->switchColor();
+        output();
+        cout << endl;
+        sleep(1000);
+    }
+}
+
+void Game::sleep(unsigned int mseconds)
+{
+    clock_t goal = mseconds + clock();
+    while (goal > clock());
 }

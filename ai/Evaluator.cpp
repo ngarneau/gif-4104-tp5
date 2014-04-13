@@ -1,6 +1,10 @@
 #include "Evaluator.h"
 #include <iostream>
 using namespace std;
+
+Evaluator::Evaluator(){
+	
+}
  
 int Evaluator::evaluate(Game* game)
 {

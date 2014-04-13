@@ -15,10 +15,15 @@ void testGame()
 {
 	cout << "Test Game" << endl;
 	Game* g = new Game();
-	cout << "Board dim " << g->getBoardDim() << endl;
-	g->output();
+	//cout << "Board dim " << g->getBoardDim() << endl;
+	//g->output();
 	std::vector<Move*> moves = g->getLegalMoves(Square::COLOR::DARK);
-	cout << "Legal moves size " << moves.size() << endl;
+	//cout << "Legal moves size " << moves.size() << endl;
+
+	g->play();
+
+	//g->output();
+
 	cout << endl;
 }
 
@@ -54,9 +59,8 @@ void testMove()
 int main(int argc, char *argv[])
 {
 	testGame();
-	testSquare();
-	testPlayer();
-	testMove();
-	std::cout << "Hello" << std::endl;
+	//testSquare();
+	//testPlayer();
+	//testMove();
 	return 0;
 }

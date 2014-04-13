@@ -7,7 +7,9 @@
 #include "Player.h"
 #include "Move.h"
 using namespace std;
- 
+
+class AlphaBeta;
+
 class Game
 {
 private:
@@ -48,7 +50,7 @@ public:
 
         vector< vector<Square*> > getBoard();
         
-        Player getCurrentPlayer();
+        Player* getCurrentPlayer();
         
         int getTotalDisksNum();
         
@@ -60,6 +62,8 @@ public:
 
         void increment(Square::COLOR);
         void decrement(Square::COLOR);
+
+        void sleep(unsigned int);
         
 };
 

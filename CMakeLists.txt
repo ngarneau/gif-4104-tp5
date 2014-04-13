@@ -18,5 +18,5 @@ set(LIBS
 	${PROJECT_SOURCE_DIR}/ai/AlphaBeta.cpp ${PROJECT_SOURCE_DIR}/ai/AlphaBeta.h
 	)
 
-add_executable(tp5 oth.cpp)
+add_executable(tp5 oth.cpp ${LIBS})
 add_executable(test test.cpp ${LIBS})

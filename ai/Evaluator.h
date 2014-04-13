@@ -9,8 +9,7 @@ using namespace std;
 class Evaluator
 {
 public:
- 
-  //Accesseurs et mutateurs
+	Evaluator();
   int evaluate(Game*);
   bool stableDirection(Game*, int, int, int, int);
  

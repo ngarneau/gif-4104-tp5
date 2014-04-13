@@ -1,14 +1,22 @@
 #ifndef ALPHABETA_H
 #define ALPHABETA_H
  
-#include <iostream>
 using namespace std;
  
+class Evaluator;
+class Move;
+class Game;
+
 class AlphaBeta
 {
+private:
+	int maxDepth;
+	Evaluator* evaluator;
 public:
- 
-  //int* getDecision(char** jeu, char joueurCourant);
+	AlphaBeta();
+  	Move* getDecision(Game*);
+  	void maxDecision(Game*, int, int&, Move*, int&, int&);
+  	void minDecision(Game*, int, int&, Move*, int&, int&);
  
 };
  
