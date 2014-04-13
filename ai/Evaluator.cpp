@@ -21,22 +21,22 @@ int Evaluator::evaluate(Game* game)
         int darkStability = 0;
         int lightStability = 0;
         for (int i = 0; i < game->getBoardDim(); i++) {
-                for (int j = 0; j < game->getBoardDim(); j++) {
-                        if ( (game->getBoard()[i][j])->getColor() != Square::COLOR::NONE) {
-                                if ( (stableDirection(game, i, j, 1, 0) || stableDirection(game, i, j, -1, 0) ) &&
-                                         (stableDirection(game, i, j, 0, 1) || stableDirection(game, i, j, 0, -1) ) &&
-                                         (stableDirection(game, i, j, 1, 1) || stableDirection(game, i, j, -1, -1) ) &&
-                                         (stableDirection(game, i, j, 1, -1) || stableDirection(game, i, j, -1, 1) ) ) {
-                                
-                                        if ( (game->getBoard()[i][j])->getColor() == Square::COLOR::DARK) {
-                                                darkStability++;
-                                        }
-                                        else {
-                                                lightStability++;
-                                        }
-                                }
+            for (int j = 0; j < game->getBoardDim(); j++) {
+                if ( (game->getBoard()[i][j])->getColor() != Square::COLOR::NONE) {
+                    if ( (stableDirection(game, i, j, 1, 0) || stableDirection(game, i, j, -1, 0) ) &&
+                         (stableDirection(game, i, j, 0, 1) || stableDirection(game, i, j, 0, -1) ) &&
+                         (stableDirection(game, i, j, 1, 1) || stableDirection(game, i, j, -1, -1) ) &&
+                         (stableDirection(game, i, j, 1, -1) || stableDirection(game, i, j, -1, 1) ) ) {
+                
+                        if ( (game->getBoard()[i][j])->getColor() == Square::COLOR::DARK) {
+                            darkStability++;
                         }
+                        else {
+                            lightStability++;
+                        }
+                    }
                 }
+            }
         }
         int stability = darkStability - lightStability;
         // disks difference

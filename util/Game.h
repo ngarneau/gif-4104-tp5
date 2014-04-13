@@ -13,13 +13,14 @@ class AlphaBeta;
 class Game
 {
 private:
-        int dim;
+        int dim = 8;
         int totalDiskNum;
         vector< vector<Square*> > board;
         int currentDisksNum;
         int darkDisksNum;
         int lightDisksNum;
         Player* currentPlayer;
+        AlphaBeta* ai;
 public:
         
         Game();
@@ -31,6 +32,7 @@ public:
         void output();
         
         void play();
+        void playInteractive();
         
         void applyMove(Move*, bool);
 
@@ -64,6 +66,14 @@ public:
         void decrement(Square::COLOR);
 
         void sleep(unsigned int);
+
+        void setBoardDim(int);
+        void setMaxDepth(int);
+        void setCores(int);
+
+        Move* getUserDecision();
+        void printPossibleMoves(std::vector<Move*>);
+        bool isLegal(Move*, std::vector<Move*>);
         
 };
 

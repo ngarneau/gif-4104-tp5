@@ -3,8 +3,9 @@
 #include <time.h>
 
 Game::Game(){
-	dim = 8;
 	totalDiskNum = dim * dim;
+
+	ai = new AlphaBeta(); 
 
 	board.resize(dim);
 	for (int i = 0; i < dim; i++) {
@@ -275,23 +276,101 @@ int Game::getLightDisksNum(){
 }
 
 void Game::play() {
-    AlphaBeta* ai = new AlphaBeta(); 
     while (!endCondition()) {
         Move* move = ai->getDecision(this);
-        //cout << "Player color: " << currentPlayer->getColor() << endl;
-        //cout << "I: " << move->getMoveI() << "J: " << move->getMoveJ() << endl;
         if (move->getMoveI() != -1 && move->getMoveJ() != -1) {
                 applyMove(move, true);
         }
         currentPlayer->switchColor();
-        output();
-        cout << endl;
-        sleep(1000);
     }
+}
+
+void Game::playInteractive()
+{
+    while (!endCondition()) {
+    	if(currentPlayer->getColor() == Square::COLOR::DARK) {
+    		std::vector<Move*> legalMoves = getLegalMoves(getCurrentPlayer()->getColor());
+			if(legalMoves.size() == 0){
+				cout << "Vous ne pouvez jouer." << endl;
+			}
+			else{
+				output();
+				printPossibleMoves(legalMoves);
+				Move* move;
+				while(1 == 1){
+					move = getUserDecision();
+					if(isLegal(move, legalMoves)) {
+						break;
+					}else{
+						cout << "Déplacement illégal" << endl;
+					}
+				}
+				applyMove(move, true);
+			}
+    		
+    	}
+    	else{
+    		Move* move = ai->getDecision(this);
+		    if (move->getMoveI() != -1 && move->getMoveJ() != -1) {
+		            applyMove(move, true);
+		    }
+    	}
+        currentPlayer->switchColor();
+    }
+}
+
+bool Game::isLegal(Move* move, std::vector<Move*> legalMoves)
+{
+	bool isLegal = false;
+	for(unsigned int i = 0; i < legalMoves.size(); i++) {
+		if(
+			move->getMoveI() == legalMoves.at(i)->getMoveI()
+			&& move->getMoveJ() == legalMoves.at(i)->getMoveJ()
+			)
+		{
+			isLegal = true;
+		}
+	}
+	return isLegal;
+}
+
+Move* Game::getUserDecision()
+{
+	int i, j;
+	cout << "Entrer Position I: " << endl;
+	cin >> i;
+	cout << "Entrer Position J: " << endl;
+	cin >> j;
+	cout << endl;
+	Move* move = new Move(i, j);
+	return move;
+}
+
+void Game::printPossibleMoves(std::vector<Move*> moves)
+{
+	cout << "--- Positions possible: ---" << endl;
+	for(unsigned int i = 0; i < moves.size(); i++){
+		cout << "I: " << moves.at(i)->getMoveI() << " J: " << moves.at(i)->getMoveJ() << endl;
+	}
 }
 
 void Game::sleep(unsigned int mseconds)
 {
     clock_t goal = mseconds + clock();
     while (goal > clock());
+}
+
+void Game::setBoardDim(int dimension)
+{
+	dim = dimension;
+}
+
+void Game::setMaxDepth(int depth)
+{
+	ai->setMaxDepth(depth);
+}
+
+void Game::setCores(int nbCores)
+{
+	ai->setCores(nbCores);
 }

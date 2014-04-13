@@ -2,6 +2,7 @@
 #include "Evaluator.h"
 #include "Game.h"
 #include "Move.h"
+#include <omp.h>
 #include <iostream>
 #include <limits>
 using namespace std;
@@ -17,23 +18,16 @@ Move* AlphaBeta::getDecision(Game* game) {
     int finalScore = -1;
     int alpha = std::numeric_limits<int>::max();
     int beta = std::numeric_limits<int>::max();
-    //if (game->getCurrentPlayer()->getColor() == Square::COLOR::DARK) {
-        maxDecision(game, 0, finalScore, finalMove, alpha, beta);
-    //}
-    //else {
-    //    minDecision(game, 0, finalScore, finalMove, alpha, beta);
-    //}
+    maxDecision(game, 0, finalScore, finalMove, alpha, beta);
     return finalMove;
 }
 
 void AlphaBeta::maxDecision(Game* game, int depth, int &finalScore, Move* finalMove, int &alpha, int &beta) {
-    //cout << "Max dec" << endl;
     if (depth >= maxDepth) {
         finalScore = evaluator->evaluate(game);
     }
     else {
         std::vector<Move*> legalMoves = game->getLegalMoves(game->getCurrentPlayer()->getColor());
-        //cout << "Legal moves: " << legalMoves.size() << endl;
         if (legalMoves.size() == 0) {
             finalScore = evaluator->evaluate(game);
         }
@@ -59,13 +53,11 @@ void AlphaBeta::maxDecision(Game* game, int depth, int &finalScore, Move* finalM
             }
             finalScore = maxScore;
             finalMove->setMove(legalMoves.at(bestMove)->getMoveI(), legalMoves.at(bestMove)->getMoveJ());
-            //cout << "I: " << finalMove->getMoveI() << "J: " << finalMove->getMoveJ() << endl;
         }
     }
 }
 
 void AlphaBeta::minDecision(Game* game, int depth, int &finalScore, Move* finalMove, int &alpha, int &beta) {
-    //cout << "Min dec" << endl;
     if (depth >= maxDepth) {
         finalScore = evaluator->evaluate(game);
     }
@@ -99,4 +91,14 @@ void AlphaBeta::minDecision(Game* game, int depth, int &finalScore, Move* finalM
             finalMove->setMove(legalMoves.at(bestMove)->getMoveI(), legalMoves.at(bestMove)->getMoveJ());
         }
     }
+}
+
+void AlphaBeta::setMaxDepth(int depth)
+{
+	maxDepth = depth;
+}
+
+void AlphaBeta::setCores(int cores)
+{
+	nbCores = cores;
 }
