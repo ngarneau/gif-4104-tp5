@@ -25,9 +25,8 @@ int main(int argc, char *argv[])
         nbCores = atoi(argv[4]);
     }
 
-    Game* game = new Game();
+    Game* game = new Game(boardDim);
 
-    game->setBoardDim(boardDim);
     game->setMaxDepth(maxDepth);
     game->setCores(nbCores);
 

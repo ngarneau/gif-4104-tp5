@@ -1,8 +1,10 @@
 #include "Game.h"
 #include "AlphaBeta.h"
 #include <time.h>
+#include "Chrono.hpp"
 
-Game::Game(){
+Game::Game(int boardDim){
+	dim = boardDim;
 	totalDiskNum = dim * dim;
 
 	ai = new AlphaBeta(); 
@@ -17,6 +19,7 @@ Game::Game(){
                 board[i][j] = new Square();
         }
     }
+
 
 	currentDisksNum = 4;
     darkDisksNum = 2;
@@ -65,6 +68,22 @@ Game::~Game(){
 
 vector< vector<Square*> > Game::getBoard() {
     return board;
+}
+
+void Game::addTime(Square::COLOR color, float time)
+{
+	if(color == Square::COLOR::DARK) {
+		timeDark += time;
+	}
+	else{
+		timeLight += time;
+	}
+}
+
+void Game::getTime(){
+	cout << endl;
+	fprintf(stderr, "Temps d'execution pour les noirs = %f sec\n", timeDark);
+	fprintf(stderr, "Temps d'execution pour les blancs = %f sec\n", timeLight);
 }
 
 void Game::output()
@@ -277,12 +296,19 @@ int Game::getLightDisksNum(){
 
 void Game::play() {
     while (!endCondition()) {
+    	Chrono lChrono(true);
         Move* move = ai->getDecision(this);
+        lChrono.pause();
+        addTime(currentPlayer->getColor(), lChrono.get());
         if (move->getMoveI() != -1 && move->getMoveJ() != -1) {
                 applyMove(move, true);
         }
         currentPlayer->switchColor();
+        output();
+        cout << endl;
     }
+    getWinner();
+    getTime();
 }
 
 void Game::playInteractive()
@@ -317,6 +343,9 @@ void Game::playInteractive()
     	}
         currentPlayer->switchColor();
     }
+
+    // print the winner
+    getWinner();
 }
 
 bool Game::isLegal(Move* move, std::vector<Move*> legalMoves)
@@ -363,6 +392,17 @@ void Game::sleep(unsigned int mseconds)
 void Game::setBoardDim(int dimension)
 {
 	dim = dimension;
+	totalDiskNum = dim * dim;
+	board.resize(dim);
+	for (int i = 0; i < dim; i++) {
+		board[i].resize(dim);
+    }
+
+	for (int i = 0; i < dim; i++) {
+        for (int j = 0; j < dim; j++) {
+                board[i][j] = new Square();
+        }
+    }
 }
 
 void Game::setMaxDepth(int depth)
@@ -373,4 +413,14 @@ void Game::setMaxDepth(int depth)
 void Game::setCores(int nbCores)
 {
 	ai->setCores(nbCores);
+}
+
+void Game::getWinner()
+{
+	if(darkDisksNum > lightDisksNum) {
+		cout << endl << "***** Les noirs ont gagné! *****" << endl;
+	}
+	else{
+		cout << endl << "***** Les blancs ont gagné! *****" << endl;
+	}
 }

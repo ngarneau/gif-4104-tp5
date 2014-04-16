@@ -14,7 +14,7 @@ using namespace std;
 void testGame()
 {
 	cout << "Test Game" << endl;
-	Game* g = new Game();
+	Game* g = new Game(5);
 	//cout << "Board dim " << g->getBoardDim() << endl;
 	//g->output();
 	std::vector<Move*> moves = g->getLegalMoves(Square::COLOR::DARK);

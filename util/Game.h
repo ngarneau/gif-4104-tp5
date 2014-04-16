@@ -21,9 +21,11 @@ private:
         int lightDisksNum;
         Player* currentPlayer;
         AlphaBeta* ai;
+        float timeDark = 0.0;
+        float timeLight = 0.0;
 public:
         
-        Game();
+        Game(int boardDim);
 
         Game(Game*);
 
@@ -74,6 +76,11 @@ public:
         Move* getUserDecision();
         void printPossibleMoves(std::vector<Move*>);
         bool isLegal(Move*, std::vector<Move*>);
+
+        void getWinner();
+
+        void addTime(Square::COLOR, float);
+        void getTime();
         
 };
 
