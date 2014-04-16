@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "AlphaBeta.h"
+#include "lodepng.h"
 #include <time.h>
 #include "Chrono.hpp"
 

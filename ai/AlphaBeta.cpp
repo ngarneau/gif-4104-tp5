@@ -20,18 +20,47 @@ Move* AlphaBeta::getDecision(Game* game) {
     int beta = std::numeric_limits<int>::max();
 
     omp_set_num_threads(nbCores);
-    #pragma omp parallel shared(finalScore, finalMove, alpha, beta)
-	{
-		#pragma omp single 
-		{
-			maxDecision(game, 0, finalScore, finalMove, alpha, beta);
-		}
+
+    std::vector<Move*> firstSetOfMoves = game->getLegalMoves(game->getCurrentPlayer()->getColor());
+    if (firstSetOfMoves.size() == 0) {
+        finalScore = evaluator->evaluate(game);
+    }
+    else{
+        int maxScore = std::numeric_limits<int>::min();
+        int bestMove = -1;
+        unsigned int i = 0;
+        int depth = 0;
+        cout << "moves: " << firstSetOfMoves.size() << endl;
+        #pragma omp parallel for shared(i)
+        for (i = 0; i < firstSetOfMoves.size(); i++) {
+            /*if(omp_get_thread_num() == 1)
+                cout << "thread: " << omp_get_thread_num() << " getting move: " << i << endl;*/
+            Game* newGame = new Game(game);
+            newGame->applyMove(firstSetOfMoves.at(i), false);
+            Move* move = new Move(-1, -1);
+            int score = 0;
+            minDecision(game, depth, score, move, alpha, beta);
+            if (score >= beta) {
+                continue;
+            }
+            if (score > maxScore) {
+                maxScore = score;
+                bestMove = i;
+            }
+            if (score > alpha) {
+                alpha = score;
+            }
+        }
+        //finalScore = maxScore;
+        finalMove->setMove(firstSetOfMoves.at(bestMove)->getMoveI(), firstSetOfMoves.at(bestMove)->getMoveJ());
     }
 
     return finalMove;
 }
 
 void AlphaBeta::maxDecision(Game* game, int depth, int &finalScore, Move* finalMove, int &alpha, int &beta) {
+    /*if(omp_get_thread_num() == 1)
+        cout << "thread: " << omp_get_thread_num() << " alpha: " << alpha << endl;*/
     if (depth >= maxDepth) {
         finalScore = evaluator->evaluate(game);
     }
@@ -51,8 +80,7 @@ void AlphaBeta::maxDecision(Game* game, int depth, int &finalScore, Move* finalM
                 int score = 0;
                 Move* move = new Move(-1, -1);
 
-                #pragma omp task shared(depth, alpha, beta)
-            		minDecision(newGame, depth + 1, score, move, alpha, beta);
+            	minDecision(newGame, depth + 1, score, move, alpha, beta);
 
                 if (score >= beta) {
                     return;
@@ -72,11 +100,17 @@ void AlphaBeta::maxDecision(Game* game, int depth, int &finalScore, Move* finalM
 }
 
 void AlphaBeta::minDecision(Game* game, int depth, int &finalScore, Move* finalMove, int &alpha, int &beta) {
+    /*if(omp_get_thread_num() == 1)
+        cout << "thread: " << omp_get_thread_num() << " depth: " << depth << endl;*/
     if (depth >= maxDepth) {
         finalScore = evaluator->evaluate(game);
     }
     else {
-        std::vector<Move*> legalMoves = game->getLegalMoves(game->getCurrentPlayer()->getColor());
+        Square::COLOR color = Square::COLOR::DARK;
+        if(game->getCurrentPlayer()->getColor() == Square::COLOR::DARK){
+            color = Square::COLOR::LIGHT;
+        }
+        std::vector<Move*> legalMoves = game->getLegalMoves(color);
         if (legalMoves.size() == 0) {
             finalScore = evaluator->evaluate(game);
         }
@@ -91,8 +125,7 @@ void AlphaBeta::minDecision(Game* game, int depth, int &finalScore, Move* finalM
                 int score = 0;
                 Move* move = new Move(-1, -1);
 
-                #pragma omp task shared(depth, alpha, beta)
-            		maxDecision(newGame, depth + 1, score, move, alpha, beta);
+            	maxDecision(newGame, depth + 1, score, move, alpha, beta);
 
                 if (score <= alpha) {
                     return;
