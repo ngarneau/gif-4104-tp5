@@ -305,7 +305,7 @@ void Game::play() {
                 applyMove(move, true);
         }
         currentPlayer->switchColor();
-        output();
+        //output();
         cout << endl;
     }
     getWinner();
