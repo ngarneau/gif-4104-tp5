@@ -2,6 +2,7 @@
 #include "Evaluator.h"
 #include "Game.h"
 #include "Move.h"
+#include "Chrono.hpp"
 #include <omp.h>
 #include <iostream>
 #include <limits>
@@ -30,9 +31,10 @@ Move* AlphaBeta::getDecision(Game* game) {
         int bestMove = -1;
         unsigned int i = 0;
         int depth = 0;
-        cout << "moves: " << firstSetOfMoves.size() << endl;
-        #pragma omp parallel for shared(i)
+        //cout << "moves: " << firstSetOfMoves.size() << endl;
+        #pragma omp parallel for shared(i) schedule(dynamic)
         for (i = 0; i < firstSetOfMoves.size(); i++) {
+            Chrono lChrono(true);
             /*if(omp_get_thread_num() == 1)
                 cout << "thread: " << omp_get_thread_num() << " getting move: " << i << endl;*/
             Game* newGame = new Game(game);
@@ -50,6 +52,8 @@ Move* AlphaBeta::getDecision(Game* game) {
             if (score > alpha) {
                 alpha = score;
             }
+            lChrono.pause();
+            cout << "thread: " << omp_get_thread_num() << " took " << lChrono.get() << endl;
         }
         //finalScore = maxScore;
         finalMove->setMove(firstSetOfMoves.at(bestMove)->getMoveI(), firstSetOfMoves.at(bestMove)->getMoveJ());

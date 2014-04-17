@@ -7,7 +7,7 @@ include_directories ("${PROJECT_SOURCE_DIR}/util")
 
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
  
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11 -fopenmp")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11 -fopenmp -O3")
 
 set(LIBS
 	${PROJECT_SOURCE_DIR}/util/Square.cpp ${PROJECT_SOURCE_DIR}/util/lodepng.h

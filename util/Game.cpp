@@ -306,7 +306,7 @@ void Game::play() {
         }
         currentPlayer->switchColor();
         //output();
-        cout << endl;
+        //cout << endl;
     }
     getWinner();
     getTime();
