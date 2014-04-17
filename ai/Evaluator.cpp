@@ -9,7 +9,19 @@ Evaluator::Evaluator(){
 int Evaluator::evaluate(Game* game)
 {
     int score = 0;
-	if (game->endCondition()) {
+    if(game->getCurrentPlayer()->getColor() == Square::COLOR::DARK){
+        score = game->getDarkDisksNum() - game->getLightDisksNum();
+    }
+    else{
+        score = game->getLightDisksNum() - game->getDarkDisksNum();
+    }
+    return score;
+
+	
+    /*
+    This stuff is too complicated for nothing
+
+    if (game->endCondition()) {
         score = game->getDarkDisksNum() - game->getLightDisksNum();
 	}
 	else {
@@ -44,6 +56,7 @@ int Evaluator::evaluate(Game* game)
         // total score
         score = (100 * mobility) + (10 * stability) + (1 * disksDiff);
 	}
+    */
 	return score;
 }
  

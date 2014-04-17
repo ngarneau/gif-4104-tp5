@@ -16,8 +16,8 @@ private:
 public:
 	AlphaBeta();
   	Move* getDecision(Game*);
-  	void maxDecision(Game*, int, int&, Move*, int&, int&);
-  	void minDecision(Game*, int, int&, Move*, int&, int&);
+  	int maxDecision(Game*, int, int&, int&);
+  	int minDecision(Game*, int, int&, int&);
   	void setMaxDepth(int);
     void setCores(int);
  

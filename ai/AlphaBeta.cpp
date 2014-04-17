@@ -16,55 +16,48 @@ AlphaBeta::AlphaBeta()
  
 Move* AlphaBeta::getDecision(Game* game) {
     Move* finalMove = new Move(-1, -1);
-    int finalScore = -1;
-    int alpha = std::numeric_limits<int>::min();
-    int beta = std::numeric_limits<int>::max();
+    int maxScore = 0;
 
     omp_set_num_threads(nbCores);
 
     std::vector<Move*> firstSetOfMoves = game->getLegalMoves(game->getCurrentPlayer()->getColor());
-    if (firstSetOfMoves.size() == 0) {
-        finalScore = evaluator->evaluate(game);
-    }
-    else{
-        int maxScore = std::numeric_limits<int>::min();
-        int bestMove = -1;
+    if (firstSetOfMoves.size() > 0) {
         unsigned int i = 0;
-        int depth = 0;
-        //cout << "moves: " << firstSetOfMoves.size() << endl;
-        #pragma omp parallel for shared(i) schedule(dynamic)
+        int bestMove = 0;
+        int score = std::numeric_limits<int>::min();
+
+        int alpha = std::numeric_limits<int>::min();
+        int beta = std::numeric_limits<int>::max();
+
+        #pragma omp parallel for private(score, alpha, beta, maxScore, bestMove)
         for (i = 0; i < firstSetOfMoves.size(); i++) {
-            Chrono lChrono(true);
-            /*if(omp_get_thread_num() == 1)
-                cout << "thread: " << omp_get_thread_num() << " getting move: " << i << endl;*/
+
             Game* newGame = new Game(game);
             newGame->applyMove(firstSetOfMoves.at(i), false);
-            Move* move = new Move(-1, -1);
-            int score = 0;
-            minDecision(game, depth, score, move, alpha, beta);
-            if (score >= beta) {
-                continue;
+
+            score = minDecision(newGame, 0, alpha, beta);
+            if(score > maxScore){
+                //cout << "thread: " << omp_get_thread_num() << " score: " << score << endl;
+
+                    maxScore = score;
+                    bestMove = i;
+
+                
             }
-            if (score > maxScore) {
-                maxScore = score;
-                bestMove = i;
-            }
-            if (score > alpha) {
-                alpha = score;
-            }
-            lChrono.pause();
-            cout << "thread: " << omp_get_thread_num() << " took " << lChrono.get() << endl;
+
         }
-        //finalScore = maxScore;
         finalMove->setMove(firstSetOfMoves.at(bestMove)->getMoveI(), firstSetOfMoves.at(bestMove)->getMoveJ());
     }
 
     return finalMove;
 }
 
-void AlphaBeta::maxDecision(Game* game, int depth, int &finalScore, Move* finalMove, int &alpha, int &beta) {
+int AlphaBeta::maxDecision(Game* game, int depth, int& alpha, int& beta) {
     /*if(omp_get_thread_num() == 1)
-        cout << "thread: " << omp_get_thread_num() << " alpha: " << alpha << endl;*/
+        cout << "thread: " << omp_get_thread_num() << " depth: " << depth << endl;*/
+
+    int finalScore = 0;
+
     if (depth >= maxDepth) {
         finalScore = evaluator->evaluate(game);
     }
@@ -74,38 +67,42 @@ void AlphaBeta::maxDecision(Game* game, int depth, int &finalScore, Move* finalM
             finalScore = evaluator->evaluate(game);
         }
         else {
-            int maxScore = std::numeric_limits<int>::min();
-            int bestMove = -1;
+            int val = std::numeric_limits<int>::min();
             unsigned int i;
-            //bool run = true;
 	        for (i = 0; i < legalMoves.size(); i++) {
                 Game* newGame = new Game(game);
                 newGame->applyMove(legalMoves.at(i), false);
                 int score = 0;
-                Move* move = new Move(-1, -1);
 
-            	minDecision(newGame, depth + 1, score, move, alpha, beta);
+            	score = minDecision(newGame, depth + 1, alpha, beta);
 
-                if (score >= beta) {
-                    return;
+                if (score > val) {
+                    val = score;
                 }
-                if (score > maxScore) {
-                    maxScore = score;
-                    bestMove = i;
+
+                if(val >= beta){
+                    return val;
                 }
-                if (score > alpha) {
-                    alpha = score;
+
+                if(val > alpha){
+                    //cout << "thread: " << omp_get_thread_num() << " alpha: " << val << endl;
+                    alpha = val;
                 }
+
         	}
-            finalScore = maxScore;
-            finalMove->setMove(legalMoves.at(bestMove)->getMoveI(), legalMoves.at(bestMove)->getMoveJ());
+            finalScore = val;
         }
     }
+
+    return finalScore;
 }
 
-void AlphaBeta::minDecision(Game* game, int depth, int &finalScore, Move* finalMove, int &alpha, int &beta) {
+int AlphaBeta::minDecision(Game* game, int depth, int& alpha, int& beta) {
     /*if(omp_get_thread_num() == 1)
         cout << "thread: " << omp_get_thread_num() << " depth: " << depth << endl;*/
+
+    int finalScore = 0;
+
     if (depth >= maxDepth) {
         finalScore = evaluator->evaluate(game);
     }
@@ -119,33 +116,35 @@ void AlphaBeta::minDecision(Game* game, int depth, int &finalScore, Move* finalM
             finalScore = evaluator->evaluate(game);
         }
         else {
-            int minScore = std::numeric_limits<int>::max();
-            int bestMove = -1;
+            int val = std::numeric_limits<int>::max();
             unsigned int i;
             //bool run  = true;
             for (i = 0; i < legalMoves.size(); i++) {
                 Game* newGame = new Game(game);
                 newGame->applyMove(legalMoves.at(i), false);
                 int score = 0;
-                Move* move = new Move(-1, -1);
 
-            	maxDecision(newGame, depth + 1, score, move, alpha, beta);
+            	score = maxDecision(newGame, depth + 1, alpha, beta);
 
-                if (score <= alpha) {
-                    return;
+                if (score < val) {
+                    val = score;
                 }
-                if (score < minScore) {
-                    minScore = score;
-                    bestMove = i;
+
+                if(alpha >= val){
+                    return val;
                 }
-                if (score < beta) {
-                    score = beta;
-                } 
+
+                if(val < beta){
+                    //cout << "thread: " << omp_get_thread_num() << " beta: " << val << endl;
+                    beta = val;
+                }
+
             }
-            finalScore = minScore;
-            finalMove->setMove(legalMoves.at(bestMove)->getMoveI(), legalMoves.at(bestMove)->getMoveJ());
+            finalScore = val;
         }
     }
+
+    return finalScore;
 }
 
 void AlphaBeta::setMaxDepth(int depth)
