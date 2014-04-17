@@ -430,23 +430,19 @@ void Game::playInteractive()
 
     while (!endCondition()) {
 
-#ifdef ENABLE_GRAPHIC
-	setGraphicBoard();
-	string str_turn;
-	if (turn<100)
-	{
-		if (turn<10)
-			str_turn = "00"+to_string(turn);
-		else
-			str_turn = "0"+to_string(turn);
-	}
-	else str_turn = to_string(turn);
+setGraphicBoard();
+		string str_turn;
+		if (turn<100)
+		{
+			if (turn<10)
+				str_turn = "00"+to_string(turn);
+			else
+				str_turn = "0"+to_string(turn);
+		}
+		else str_turn = to_string(turn);
 
-	string name_img ("img"+str_turn);
-	snapGraphic(name_img);
-#endif
-
-
+		string name_img ("img"+str_turn);
+		snapGraphic(name_img);
 
     	if(currentPlayer->getColor() == Square::COLOR::DARK) {
     		std::vector<Move*> legalMoves = getLegalMoves(getCurrentPlayer()->getColor());
