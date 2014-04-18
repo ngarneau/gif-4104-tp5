@@ -219,7 +219,7 @@ void Game::outputGraphic()
 
 void Game::snapGraphic(int turn)
 {
-
+#ifdef ENABLE_GRAPHIC
 	setGraphicBoard();
 	string str_turn;
 	if (turn<100)
@@ -252,7 +252,7 @@ void Game::snapGraphic(int turn)
 
 	encodeOneStep(name_img.c_str(), image, img_size, img_size);
 
-
+#endif
 }
 
 void Game::applyMove(Move* move, bool draw){
