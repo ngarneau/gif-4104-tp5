@@ -38,11 +38,9 @@ Move* AlphaBeta::getDecision(Game* game) {
             score = minDecision(newGame, 0, alpha, beta);
             if(score > maxScore){
                 //cout << "thread: " << omp_get_thread_num() << " score: " << score << endl;
-                #pragma omp critical
-                {
                     maxScore = score;
                     bestMove = i;
-                }
+            
             }
 
         }
