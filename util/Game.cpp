@@ -4,6 +4,7 @@
 #include <time.h>
 #include "Chrono.hpp"
 #include <math.h>
+#include "omp.h"
 
 const double PI=3.14;
 const unsigned char G_NONE=200;
@@ -96,7 +97,7 @@ Game::Game(Game* game) {
     }
 
 
-#ifdef ENABLE_GRAPHIC
+/*#ifdef ENABLE_GRAPHIC
 
 	graphicboard.resize(dim*PIXSIZE);
 	for (int i = 0; i < dim*PIXSIZE; i++) {
@@ -111,8 +112,7 @@ Game::Game(Game* game) {
 		else graphicboard[i][j] = G_NONE;
             }
     }
-/**/
-#endif
+#endif*/
 
     currentDisksNum = game->getCurrentDisksNum();
     darkDisksNum = game->getDarkDisksNum();
@@ -249,10 +249,6 @@ void Game::snapGraphic(int turn)
 			image[4*y*img_size + 4*x + 2]=graphicboard[x][y];
 			image[4*y*img_size + 4*x + 3]=255;
 			}
-cout<<"DEBUG: grosseur dim "<<dim<<endl;
-cout<<"DEBUG: grosseur PIXSIZE "<<PIXSIZE<<endl;
-cout<<"DEBUG: grosseur img_size"<<img_size<<endl;
-cout<<"DEBUG: grosseur colonne "<<image.size()<<endl;
 
 	encodeOneStep(name_img.c_str(), image, img_size, img_size);
 
@@ -444,13 +440,14 @@ int Game::getLightDisksNum(){
 
 void Game::play() {
 
+    omp_set_num_threads(nbCores);
+
 	int turn=0;
-    #pragma omp parallel
-    {
         while (!endCondition()) {
 #ifdef ENABLE_GRAPHIC
 	snapGraphic(turn);
 #endif
+
         	Chrono lChrono(true);
             Move* move = ai->getDecision(this);
             lChrono.pause();
@@ -458,27 +455,30 @@ void Game::play() {
             if (move->getMoveI() != -1 && move->getMoveJ() != -1) {
                     applyMove(move, true);
             }
-turn++;
+
+            turn++;
             currentPlayer->switchColor();
             //output();
             //cout << endl;
-        }
-        currentPlayer->switchColor();
     }
+
+    getWinner();
+    getTime();
 }
 
 void Game::playInteractive()
 {
 
+    omp_set_num_threads(nbCores);
+
     int turn=0;
+
 
     while (!endCondition()) {
 
 #ifdef ENABLE_GRAPHIC
 	snapGraphic(turn);
 #endif
-
-
 
     	if(currentPlayer->getColor() == Square::COLOR::DARK) {
     		std::vector<Move*> legalMoves = getLegalMoves(getCurrentPlayer()->getColor());
@@ -510,10 +510,10 @@ void Game::playInteractive()
     	}
         currentPlayer->switchColor();
 	turn++;
-    }
-
+}
     // print the winner
     getWinner();
+    getTime();
 }
 
 bool Game::isLegal(Move* move, std::vector<Move*> legalMoves)
@@ -578,7 +578,17 @@ void Game::setMaxDepth(int depth)
 	ai->setMaxDepth(depth);
 }
 
-void Game::setCores(int nbCores)
+void Game::setCores(int newnbCores)
 {
-	ai->setCores(nbCores);
+	nbCores = newnbCores;
+}
+
+void Game::getWinner()
+{
+    if(darkDisksNum > lightDisksNum) {
+        cout << endl << "***** Les noirs ont gagné! *****" << endl;
+    }
+    else{
+        cout << endl << "***** Les blancs ont gagné! *****" << endl;
+    }
 }

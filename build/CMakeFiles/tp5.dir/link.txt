@@ -1,1 +1,0 @@
-/usr/bin/c++    -Wall -std=c++11 -fopenmp -g    CMakeFiles/tp5.dir/oth.cpp.o CMakeFiles/tp5.dir/util/Square.cpp.o CMakeFiles/tp5.dir/util/Game.cpp.o CMakeFiles/tp5.dir/util/Player.cpp.o CMakeFiles/tp5.dir/util/Move.cpp.o CMakeFiles/tp5.dir/ai/Evaluator.cpp.o CMakeFiles/tp5.dir/ai/AlphaBeta.cpp.o CMakeFiles/tp5.dir/util/lodepng.cpp.o  -o bin/tp5 -rdynamic 

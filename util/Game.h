@@ -13,6 +13,7 @@ class AlphaBeta;
 class Game
 {
 private:
+public:
         int dim = 8;
         int totalDiskNum;
         vector< vector<Square*> > board;
@@ -24,7 +25,7 @@ private:
         AlphaBeta* ai;
         float timeDark = 0.0;
         float timeLight = 0.0;
-public:
+        int nbCores;
         
         Game(int boardDim);
 

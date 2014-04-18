@@ -29,7 +29,7 @@ Move* AlphaBeta::getDecision(Game* game) {
         int alpha = std::numeric_limits<int>::min();
         int beta = std::numeric_limits<int>::max();
 
-        #pragma omp for
+        #pragma omp parallel for
         for (i = 0; i < firstSetOfMoves.size(); i++) {
 
             Game* newGame = new Game(game);
@@ -59,12 +59,22 @@ int AlphaBeta::maxDecision(Game* game, int depth, int& alpha, int& beta) {
     int finalScore = 0;
 
     if (depth >= maxDepth) {
-        finalScore = evaluator->evaluate(game);
+        if(game->getCurrentPlayer()->getColor() == Square::COLOR::DARK){
+            finalScore = game->getDarkDisksNum() - game->getLightDisksNum();
+        }
+        else{
+            finalScore = game->getLightDisksNum() - game->getDarkDisksNum();
+        }
     }
     else {
         std::vector<Move*> legalMoves = game->getLegalMoves(game->getCurrentPlayer()->getColor());
         if (legalMoves.size() == 0) {
-            finalScore = evaluator->evaluate(game);
+            if(game->getCurrentPlayer()->getColor() == Square::COLOR::DARK){
+                finalScore = game->getDarkDisksNum() - game->getLightDisksNum();
+            }
+            else{
+                finalScore = game->getLightDisksNum() - game->getDarkDisksNum();
+            }
         }
         else {
             int val = std::numeric_limits<int>::min();
@@ -104,7 +114,12 @@ int AlphaBeta::minDecision(Game* game, int depth, int& alpha, int& beta) {
     int finalScore = 0;
 
     if (depth >= maxDepth) {
-        finalScore = evaluator->evaluate(game);
+        if(game->getCurrentPlayer()->getColor() == Square::COLOR::DARK){
+            finalScore = game->getDarkDisksNum() - game->getLightDisksNum();
+        }
+        else{
+            finalScore = game->getLightDisksNum() - game->getDarkDisksNum();
+        }
     }
     else {
         Square::COLOR color = Square::COLOR::DARK;
@@ -113,7 +128,12 @@ int AlphaBeta::minDecision(Game* game, int depth, int& alpha, int& beta) {
         }
         std::vector<Move*> legalMoves = game->getLegalMoves(color);
         if (legalMoves.size() == 0) {
-            finalScore = evaluator->evaluate(game);
+            if(game->getCurrentPlayer()->getColor() == Square::COLOR::DARK){
+                finalScore = game->getDarkDisksNum() - game->getLightDisksNum();
+            }
+            else{
+                finalScore = game->getLightDisksNum() - game->getDarkDisksNum();
+            }
         }
         else {
             int val = std::numeric_limits<int>::max();
