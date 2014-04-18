@@ -29,7 +29,7 @@ Move* AlphaBeta::getDecision(Game* game) {
         int alpha = std::numeric_limits<int>::min();
         int beta = std::numeric_limits<int>::max();
 
-        #pragma omp parallel for
+        #pragma omp parallel for schedule(dynamic)
         for (i = 0; i < firstSetOfMoves.size(); i++) {
 
             Game* newGame = new Game(game);
