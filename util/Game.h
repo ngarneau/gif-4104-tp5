@@ -32,7 +32,7 @@ public:
 
         void output();
 	void outputGraphic();
-	void snapGraphic(const string& title);  
+	void snapGraphic(int turn);  
 
         void play();
         void playInteractive();

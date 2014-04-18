@@ -9,7 +9,7 @@ const unsigned char G_NONE=200;
 const unsigned char G_LIGHT=255;
 const unsigned char G_DARK=0;
 
-const int PIXSIZE=20;
+const int PIXSIZE=50;
 
 #define ENABLE_GRAPHIC
 
@@ -105,7 +105,7 @@ Game::Game(Game* game) {
 
     for (int i = 0; i < dim*PIXSIZE; i++) {
             for (int j = 0; j < dim*PIXSIZE; j++) {
-		if (i%(PIXSIZE)==PIXSIZE/2 || j%(PIXSIZE)==PIXSIZE/2)
+		if (i%(PIXSIZE)==PIXSIZE/2 || j%(PIXSIZE)==PIXSIZE/2) //quadrillage du plateau de jeu
 		graphicboard[i][j] = G_DARK;
 		else graphicboard[i][j] = G_NONE;
             }
@@ -141,7 +141,7 @@ void Game::setGraphicBoard() {
                      for (int m = i*PIXSIZE; m < (i+1)*PIXSIZE; m++) {
            		 for (int n = j*PIXSIZE; n < (j+1)*PIXSIZE; n++) {
 				if ( sqrt( pow(m-(i*PIXSIZE+PIXSIZE/2),2) + pow(n-(j*PIXSIZE+PIXSIZE/2),2) )  < (PIXSIZE/2) ){
-				
+				// a l'interieur d'un cercle de rayon PIXSIZE/2s
 					Square* s = board[i][j];
 					Square::COLOR color = s->getColor();
 					switch(color){
@@ -202,8 +202,22 @@ void Game::outputGraphic()
 }
 
 
-void Game::snapGraphic(const string& title)
+void Game::snapGraphic(int turn)
 {
+
+	setGraphicBoard();
+	string str_turn;
+	if (turn<100)
+	{
+		if (turn<10)
+			str_turn = "00"+to_string(turn);
+		else
+			str_turn = "0"+to_string(turn);
+	}
+	else str_turn = to_string(turn);
+
+	string name_img ("img"+str_turn+".png");
+
 
 	unsigned x, y;
 	unsigned img_size = PIXSIZE*dim;
@@ -225,7 +239,7 @@ cout<<"DEBUG: grosseur PIXSIZE "<<PIXSIZE<<endl;
 cout<<"DEBUG: grosseur img_size"<<img_size<<endl;
 cout<<"DEBUG: grosseur colonne "<<image.size()<<endl;
 
-	encodeOneStep(title.c_str(), image, img_size, img_size);
+	encodeOneStep(name_img.c_str(), image, img_size, img_size);
 
 
 }
@@ -414,14 +428,27 @@ int Game::getLightDisksNum(){
 }
 
 void Game::play() {
+
+
+
+    int turn=0;
+
     while (!endCondition()) {
+
+#ifdef ENABLE_GRAPHIC
+	snapGraphic(turn);
+#endif
+
         Move* move = ai->getDecision(this);
         if (move->getMoveI() != -1 && move->getMoveJ() != -1) {
                 applyMove(move, true);
         }
+	turn++;
         currentPlayer->switchColor();
     }
 }
+
+
 
 void Game::playInteractive()
 {
@@ -431,19 +458,7 @@ void Game::playInteractive()
     while (!endCondition()) {
 
 #ifdef ENABLE_GRAPHIC
-	setGraphicBoard();
-	string str_turn;
-	if (turn<100)
-	{
-		if (turn<10)
-			str_turn = "00"+to_string(turn);
-		else
-			str_turn = "0"+to_string(turn);
-	}
-	else str_turn = to_string(turn);
-
-	string name_img ("img"+str_turn);
-	snapGraphic(name_img);
+	snapGraphic(turn);
 #endif
 
 
