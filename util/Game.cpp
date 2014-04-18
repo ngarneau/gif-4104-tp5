@@ -15,7 +15,6 @@ const unsigned char G_DARK=0;
 
 const int PIXSIZE=50;
 
-#define ENABLE_GRAPHIC
 
 
 void encodeOneStep(const char* filename, std::vector<unsigned char>& image, unsigned width, unsigned height)
