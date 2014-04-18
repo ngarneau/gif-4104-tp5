@@ -29,7 +29,7 @@ Move* AlphaBeta::getDecision(Game* game) {
         int alpha = std::numeric_limits<int>::min();
         int beta = std::numeric_limits<int>::max();
 
-        #pragma omp parallel for private(score, alpha, beta, maxScore, bestMove)
+        #pragma omp for
         for (i = 0; i < firstSetOfMoves.size(); i++) {
 
             Game* newGame = new Game(game);
@@ -38,11 +38,11 @@ Move* AlphaBeta::getDecision(Game* game) {
             score = minDecision(newGame, 0, alpha, beta);
             if(score > maxScore){
                 //cout << "thread: " << omp_get_thread_num() << " score: " << score << endl;
-
+                #pragma omp critical
+                {
                     maxScore = score;
                     bestMove = i;
-
-                
+                }
             }
 
         }

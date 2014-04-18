@@ -296,17 +296,20 @@ int Game::getLightDisksNum(){
 }
 
 void Game::play() {
-    while (!endCondition()) {
-    	Chrono lChrono(true);
-        Move* move = ai->getDecision(this);
-        lChrono.pause();
-        addTime(currentPlayer->getColor(), lChrono.get());
-        if (move->getMoveI() != -1 && move->getMoveJ() != -1) {
-                applyMove(move, true);
+    #pragma omp parallel
+    {
+        while (!endCondition()) {
+        	Chrono lChrono(true);
+            Move* move = ai->getDecision(this);
+            lChrono.pause();
+            addTime(currentPlayer->getColor(), lChrono.get());
+            if (move->getMoveI() != -1 && move->getMoveJ() != -1) {
+                    applyMove(move, true);
+            }
+            currentPlayer->switchColor();
+            //output();
+            //cout << endl;
         }
-        currentPlayer->switchColor();
-        //output();
-        //cout << endl;
     }
     getWinner();
     getTime();

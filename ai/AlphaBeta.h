@@ -10,10 +10,10 @@ class Game;
 class AlphaBeta
 {
 private:
+public:
 	int maxDepth;
 	int nbCores;
 	Evaluator* evaluator;
-public:
 	AlphaBeta();
   	Move* getDecision(Game*);
   	int maxDecision(Game*, int, int&, int&);
