@@ -1,0 +1,1 @@
+/usr/bin/c++    -Wall -std=c++11 -fopenmp -g    CMakeFiles/test.dir/test.cpp.o CMakeFiles/test.dir/util/Square.cpp.o CMakeFiles/test.dir/util/Game.cpp.o CMakeFiles/test.dir/util/Player.cpp.o CMakeFiles/test.dir/util/Move.cpp.o CMakeFiles/test.dir/ai/Evaluator.cpp.o CMakeFiles/test.dir/ai/AlphaBeta.cpp.o CMakeFiles/test.dir/util/lodepng.cpp.o  -o bin/test -rdynamic 

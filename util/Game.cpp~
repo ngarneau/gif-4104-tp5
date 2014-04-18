@@ -2,7 +2,6 @@
 #include "AlphaBeta.h"
 #include "lodepng.h"
 #include <time.h>
-#include "Chrono.hpp"
 #include <math.h>
 
 const double PI=3.14;
@@ -10,7 +9,7 @@ const unsigned char G_NONE=200;
 const unsigned char G_LIGHT=255;
 const unsigned char G_DARK=0;
 
-const int PIXSIZE=50;
+const int PIXSIZE=20;
 
 #define ENABLE_GRAPHIC
 
@@ -29,8 +28,7 @@ double norm(int a, int b)
 return sqrt(a*a +b*b);
 }
 
-Game::Game(int boardDim){
-	dim = boardDim;
+Game::Game(){
 	totalDiskNum = dim * dim;
 
 	ai = new AlphaBeta(); 
@@ -84,6 +82,7 @@ Game::Game(int boardDim){
 Game::Game(Game* game) {
     dim = game->getBoardDim();
     totalDiskNum = game->getTotalDisksNum();
+	
 	board.resize(dim);
 	for (int i = 0; i < dim; i++) {
 		board[i].resize(dim);
@@ -126,6 +125,7 @@ Game::~Game(){
                 delete board[i][j];
         }
     }
+
     delete currentPlayer;
 }
 
@@ -133,21 +133,6 @@ vector< vector<Square*> > Game::getBoard() {
     return board;
 }
 
-void Game::addTime(Square::COLOR color, float time)
-{
-	if(color == Square::COLOR::DARK) {
-		timeDark += time;
-	}
-	else{
-		timeLight += time;
-	}
-}
-
-void Game::getTime(){
-	cout << endl;
-	fprintf(stderr, "Temps d'execution pour les noirs = %f sec\n", timeDark);
-	fprintf(stderr, "Temps d'execution pour les blancs = %f sec\n", timeLight);
-}
 
 void Game::setGraphicBoard() {
 
@@ -444,28 +429,26 @@ int Game::getLightDisksNum(){
 
 void Game::play() {
 
-	int turn=0;
-    #pragma omp parallel
-    {
-        while (!endCondition()) {
+
+
+    int turn=0;
+
+    while (!endCondition()) {
+
 #ifdef ENABLE_GRAPHIC
 	snapGraphic(turn);
 #endif
-        	Chrono lChrono(true);
-            Move* move = ai->getDecision(this);
-            lChrono.pause();
-            addTime(currentPlayer->getColor(), lChrono.get());
-            if (move->getMoveI() != -1 && move->getMoveJ() != -1) {
-                    applyMove(move, true);
-            }
-turn++;
-            currentPlayer->switchColor();
-            //output();
-            //cout << endl;
+
+        Move* move = ai->getDecision(this);
+        if (move->getMoveI() != -1 && move->getMoveJ() != -1) {
+                applyMove(move, true);
         }
+	turn++;
         currentPlayer->switchColor();
     }
 }
+
+
 
 void Game::playInteractive()
 {
@@ -488,6 +471,7 @@ void Game::playInteractive()
 			}
 			else{
 				output();
+
 				printPossibleMoves(legalMoves);
 				Move* move;
 				while(1 == 1){
@@ -511,9 +495,6 @@ void Game::playInteractive()
         currentPlayer->switchColor();
 	turn++;
     }
-
-    // print the winner
-    getWinner();
 }
 
 bool Game::isLegal(Move* move, std::vector<Move*> legalMoves)
@@ -560,17 +541,6 @@ void Game::sleep(unsigned int mseconds)
 void Game::setBoardDim(int dimension)
 {
 	dim = dimension;
-	totalDiskNum = dim * dim;
-	board.resize(dim);
-	for (int i = 0; i < dim; i++) {
-		board[i].resize(dim);
-    }
-
-	for (int i = 0; i < dim; i++) {
-        for (int j = 0; j < dim; j++) {
-                board[i][j] = new Square();
-        }
-    }
 }
 
 void Game::setMaxDepth(int depth)
